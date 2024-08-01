@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 # Install required PHP extensions and other dependencies
 RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev \
@@ -17,3 +17,9 @@ COPY . /var/www/html
 # Set permissions for the web server
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 775 /var/www/html/submissions
+
+# Expose port 80
+EXPOSE 80
+
+# Start Apache in the foreground
+CMD ["apache2-foreground"]
