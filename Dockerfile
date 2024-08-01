@@ -16,7 +16,7 @@ COPY . /var/www/html
 
 # Set permissions for the web server
 RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 775 /var/www/html/submissions
+#RUN chmod -R 775 /var/www/html/submissions
 
 # Expose port 80
 EXPOSE 80
