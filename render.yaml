@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: my-php-app
+    name: your_php_script.php
     env: docker
     plan: free
     dockerfilePath: Dockerfile
