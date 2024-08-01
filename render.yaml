@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: php-app
+    name: my-php-app
     env: docker
-    dockerfilePath: Dockerfile
     plan: free
+    dockerfilePath: Dockerfile
     envVars:
-      - key: RENDER_EXTERNAL_URL
-        value: https://pinet-check.onrender.com # Replace with your Render domain
+      - key: PORT
+        value: 80
