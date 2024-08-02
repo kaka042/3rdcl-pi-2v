@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:7.4-apache
 
 # Install required PHP extensions and other dependencies
 RUN apt-get update && \
@@ -24,8 +24,11 @@ COPY . /var/www/html
 RUN composer install
 
 # Set permissions for the web server
-RUN chown -R www-data:www-data /var/www/html/submissions && chmod -R 777 /var/www/html/submissions
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html/submissions
 
+# Expose port 80
+EXPOSE 80
 
-# Start the keep-alive script in the background and then start the Apache server
-CMD ["sh", "-c", "nohup python3 /keep_alive.py & apache2-foreground"]
+# Start the Apache server
+CMD ["apache2-foreground"]
