@@ -26,9 +26,6 @@ RUN composer install
 # Set permissions for the web server
 RUN chown -R www-data:www-data /var/www/html/submissions && chmod -R 777 /var/www/html/submissions
 
-# Keep-alive script to prevent the Render instance from spinning down
-COPY keep_alive.py /keep_alive.py
-RUN chmod +x /keep_alive.py
 
 # Start the keep-alive script in the background and then start the Apache server
 CMD ["sh", "-c", "nohup python3 /keep_alive.py & apache2-foreground"]
