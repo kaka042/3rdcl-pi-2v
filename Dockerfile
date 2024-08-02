@@ -4,12 +4,15 @@ FROM php:8.1-apache
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
-    libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    libfreetype6-dev
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd
+
+RUN docker-php-ext-install curl
+
+# Clean up APT when done
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable mod_rewrite for Apache
 RUN a2enmod rewrite
@@ -23,11 +26,11 @@ WORKDIR /var/www/html
 # Copy the application files
 COPY . /var/www/html
 
-# Install dependencies
+# Install PHP dependencies with Composer
 RUN composer install
 
 # Set permissions for the web server
 RUN chown -R www-data:www-data /var/www/html/submissions && chmod -R 777 /var/www/html/submissions
 
-# Start the keep-alive script in the background and then start the Apache server
+# Start the Apache server
 CMD ["apache2-foreground"]
