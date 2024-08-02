@@ -2,8 +2,9 @@ services:
   - type: web
     name: pinet-check
     env: docker
-    plan: free
-    dockerfilePath: Dockerfile
-    buildCommand: 'composer install'
-    startCommand: 'apache2-foreground'
-    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    buildCommand: ""
+    startCommand: "php -S 0.0.0.0:$PORT"
+    envVars:
+      - key: PORT
+        value: 8080
