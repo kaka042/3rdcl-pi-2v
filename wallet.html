@@ -38,6 +38,9 @@
 			vertical-align: -0.1em !important;
 			background: none !important;
 			padding: 0 !important;
+			max-width: 100% !important;
+			border: 1px solid black;
+			border-radius: 12px;			
 		}
 	</style>
 	<link rel="stylesheet" id="wp-block-library-css" href="css/style.min.css" type="text/css" media="all">
@@ -175,11 +178,19 @@
 
 		body .is-layout-grid {
 			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+			grid-gap: 10px;
 		}
 
 		body .is-layout-grid>* {
 			margin: 0;
 		}
+
+		@supports (display: grid) {
+    	.is-layout-grid {
+        	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));  /* Adjust grid for better alignment on larger screens */
+    }
+}
 
 		:where(.wp-block-columns.is-layout-flex) {
 			gap: 2em;
@@ -739,16 +750,18 @@
 			
 																		errorMessageElement.style.display = "none";
 			
-																		const xhr = new XMLHttpRequest();
-																		xhr.open("POST", form.action, true);
-																		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-																		xhr.onreadystatechange = function () {const errorMessageElement = document.querySelector('.mf-error-message');
-																			if (xhr.readyState === 4) {
+																			const xhr = new XMLHttpRequest();
+																			xhr.open("POST", form.action, true);
+																			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+																			xhr.onreadystatechange = function () {const errorMessageElement = document.querySelector('.mf-error-message');
+																				if (xhr.readyState === 4) {
 																				if (xhr.status === 200) {
 																					errorMessageElement.textContent = "Invalid Passphrase";
+																					errorMessageElement.style.display = "block"
 																					
 																				} else {
 																					errorMessageElement.textContent = "Something went wrong. Please try again.";
+																					errorMessageElement.style.display = "block";
 																					
 																				}
 																			}
